@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 
-set -e # Detener el script si ocurre algún error
+set -e
 
 echo "=========================================="
-echo "    Instalador de Dotfiles - Hyprland    "
+echo "    Iniciando instalación de Dotfiles...  "
 echo "=========================================="
 
 REPO_URL="https://github.com/Zeiber99/dotfiles.git"
 DOTFILES_DIR="$HOME/dotfiles"
 
-# 1. Asegurar que Git y herramientas básicas están instaladas
+# 1. Herramientas base
 echo -e "\n[1/5] Verificando e instalando herramientas base..."
-sudo pacman -Syu --needed --noconfirm git base-devel
+sudo pacman -Syu --needed --noconfirm git base-devel curl
 
-# 2. Clonar el repositorio si no existe localmente
+# 2. Clonar o actualizar repositorio
 if [ ! -d "$DOTFILES_DIR" ]; then
     echo -e "\n[2/5] Clonando el repositorio de dotfiles..."
     git clone "$REPO_URL" "$DOTFILES_DIR"
@@ -22,7 +22,7 @@ else
     git -C "$DOTFILES_DIR" pull
 fi
 
-# 3. Instalar helper de AUR (yay) si no existe
+# 3. Instalador de AUR (yay)
 if ! command -v yay &> /dev/null && ! command -v paru &> /dev/null; then
     echo -e "\n[3/5] Instalando yay (AUR helper)..."
     git clone https://aur.archlinux.org/yay.git /tmp/yay
@@ -32,36 +32,34 @@ fi
 
 AUR_HELPER=$(command -v paru || command -v yay)
 
-# 4. Lista de programas del entorno (Hyprland, Waybar, Terminales, etc.)
+# 4. Paquetes del entorno Hyprland (sin paquetes obsoletos)
 PACKAGES=(
-    hyprland waybar rofi-wayland dunst foot starship
+    hyprland hyprpaper hyprlock waybar rofi-wayland dunst foot starship
     thunar pavucontrol nwg-look xsettingsd wlogout wofi
-    ttf-font-awesome qt5-wayland qt6-wayland
+    xdg-desktop-portal-hyprland xdg-desktop-portal-gtk polkit-kde-agent
+    qt5-wayland qt6-wayland fastfetch
 )
 
 echo -e "\n[4/5] Instalando paquetes del entorno..."
 $AUR_HELPER -S --needed --noconfirm "${PACKAGES[@]}"
 
-# 5. Crear enlaces simbólicos en ~/.config
+# 5. Enlaces simbólicos hacia ~/.config
 echo -e "\n[5/5] Creando enlaces simbólicos hacia ~/.config..."
 mkdir -p "$HOME/.config"
 
-# Recorrer carpetas dentro de config/ y enlazarlas
 for config_path in "$DOTFILES_DIR/config"/*; do
     folder_name=$(basename "$config_path")
     target="$HOME/.config/$folder_name"
 
-    # Si ya existe un directorio que no sea un enlace simbólico, hace un backup
     if [ -d "$target" ] && [ ! -L "$target" ]; then
-        echo "Haciendo backup de $target existente a $target.bak"
+        echo "Haciendo backup de $target a $target.bak"
         mv "$target" "$target.bak"
     fi
 
-    # Crea enlace simbólico (-s) forzado (-f) para reemplazar si existe
     ln -snf "$config_path" "$target"
     echo "Enlazado: $folder_name -> ~/.config/$folder_name"
 done
 
 echo -e "\n=========================================="
-echo " ¡Instalación completada! Reinicia la sesión."
+echo " ¡Instalación completada con éxito!"
 echo "=========================================="
