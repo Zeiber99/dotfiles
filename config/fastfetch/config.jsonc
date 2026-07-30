@@ -1,0 +1,78 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+  "logo": {
+    "source": "~/Downloads/rosa.jpg",
+    "width": 28,
+    "padding": {
+      "top": 1,
+      "right": 3
+    }
+  },
+  "display": {
+    "separator": " : "
+  },
+  "modules": [
+    "break",
+    {
+      "type": "title",
+      "format": "  󰋋  {1}@{2}"
+    },
+    {
+      "type": "custom",
+      "format": "┌─ 󰋜 コンピューター (Sistema) ────────────────┐"
+    },
+    {
+      "type": "os",
+      "key": "│ 󰣇  OS",
+      "keyColor": "35"
+    },
+    {
+      "type": "kernel",
+      "key": "│ 󰌽  Kernel",
+      "keyColor": "35"
+    },
+    {
+      "type": "packages",
+      "key": "│ 󰏖  Paquetes",
+      "keyColor": "35"
+    },
+    {
+      "type": "wm",
+      "key": "│ 󰨇  WM",
+      "keyColor": "35"
+    },
+    {
+      "type": "terminal",
+      "key": "│ 󰞷  Terminal",
+      "keyColor": "35"
+    },
+    {
+      "type": "custom",
+      "format": "├─ 󰍹  スペック (Hardware) ───────────────────┤"
+    },
+    {
+      "type": "cpu",
+      "key": "│ 󰍛  CPU",
+      "keyColor": "34"
+    },
+    {
+      "type": "gpu",
+      "key": "│ 󰢮  GPU",
+      "keyColor": "34"
+    },
+    {
+      "type": "memory",
+      "key": "│ 󰑭  RAM",
+      "keyColor": "34"
+    },
+    {
+      "type": "custom",
+      "format": "└──────────────────────────────────────────┘"
+    },
+    "break",
+    {
+      "type": "colors",
+      "symbol": "circle"
+    }
+  ]
+}
