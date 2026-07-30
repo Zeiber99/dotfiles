@@ -1,0 +1,65 @@
+window {
+    margin: 0px;
+    background-color: rgba(26, 27, 38, 0.85); /* Fondo oscuro translúcido */
+    border: 2px solid rgba(122, 162, 247, 0.89); /* Borde azul suave */
+    border-radius: 12px;
+}
+
+#input {
+    margin: 15px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    background-color: rgba(41, 46, 66, 0.9);
+    color: #c0caf5;
+    font-family: monospace;
+    font-size: 14px;
+}
+
+#inner-box {
+    margin: 0px 15px 15px 15px;
+    background-color: transparent;
+}
+
+#outer-box {
+    margin: 0px;
+    background-color: transparent;
+}
+
+#scroll {
+    margin: 0px;
+    background-color: transparent;
+}
+
+#text {
+    margin: 5px;
+    color: #a9b1d6;
+    font-family: monospace;
+    font-size: 13px;
+}
+
+#entry {
+    padding: 8px 12px;
+    border-radius: 6px;
+    background-color: transparent;
+}
+
+#entry:selected {
+    background-color: rgba(122, 162, 247, 0.2);
+    border: 1px solid rgba(122, 162, 247, 0.5);
+    color: #7aa2f7;
+}
+
+#img {
+    margin-right: 12px;
+    background-color: transparent;
+}
+
+#entry {
+    padding: 8px 12px;
+    border-radius: 6px;
+    background-color: transparent;
+    /* Esto alinea correctamente el icono y el texto en horizontal */
+    /* stylelint-disable-next-line property-no-unknown */
+    -wofi-icon-size: 24px; 
+}

@@ -1,4 +1,10 @@
-*.key
-*.pem
-.bash_history
-.zsh_history
+# Navegadores y datos de sesión
+config/BraveSoftware/
+config/pulse/
+config/dconf/
+
+# Archivos temporales y de bases de datos
+*.log
+*.ldb
+*.pma
+*.sqlite

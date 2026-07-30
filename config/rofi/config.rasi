@@ -1,0 +1,72 @@
+configuration {
+    modi: "drun,run";
+    show-icons: true;
+    icon-theme: "Papirus-Dark";
+    font: "JetBrainsMono Nerd Font 11";
+    drun-display-format: "{icon} {name}";
+}
+
+@theme "/dev/null"
+
+* {
+    bg: #1a1b26d9;
+    bg-selected: #7aa2f733;
+    fg: #c0caf5;
+    fg-selected: #7dcfff;
+    border-col: #7aa2f780;
+}
+
+window {
+    width: 35%;
+    border: 2px;
+    border-color: @border-col;
+    border-radius: 16px;
+    background-color: @bg;
+    padding: 20px;
+}
+
+inputbar {
+    children: [entry];
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 10px;
+    margin: 0 0 15px 0;
+}
+
+entry {
+    background-color: transparent;
+    text-color: @fg;
+    placeholder: "🔍 Buscar aplicación...";
+    placeholder-color: #565f89;
+}
+
+listview {
+    lines: 8;
+    columns: 1;
+    background-color: transparent;
+    spacing: 6px;
+}
+
+element {
+    padding: 8px 12px;
+    border-radius: 10px;
+    background-color: transparent;
+    text-color: @fg;
+}
+
+element selected {
+    background-color: @bg-selected;
+    text-color: @fg-selected;
+}
+
+element-icon {
+    size: 24px;
+    margin: 0 10px 0 0;
+    background-color: transparent;
+}
+
+element-text {
+    background-color: transparent;
+    text-color: inherit;
+    vertical-align: 0.5;
+}

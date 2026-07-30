@@ -1,0 +1,10 @@
+show=drun
+width=600
+height=400
+always_parse_args=true
+allow_images=true
+show_icons=true
+icon_size=24
+term=foot
+insensitive=true
+prompt=Buscar...

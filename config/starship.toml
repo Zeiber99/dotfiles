@@ -1,0 +1,22 @@
+# Formato clásico estilo Arch: [alvaro@archlinux carpeta]$
+format = """
+[$username$hostname]($style) [$directory]($style_dir)$character
+"""
+
+[username]
+style_user = "bold green"
+show_always = true
+format = "[$user]($style)"
+
+[hostname]
+ssh_only = false
+style = "bold green"
+format = "@[$hostname]($style)"
+
+[directory]
+style = "bold cyan"
+format = "[$path]($style)"
+
+[character]
+success_symbol = "[\\$](bold white) "
+error_symbol = "[\\$](bold red) "
