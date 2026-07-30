@@ -1,77 +1,67 @@
 #!/usr/bin/env bash
 
-set -e
+set -e # Detener el script si ocurre algún error
 
 echo "=========================================="
-echo "   Iniciando instalación de Dotfiles...   "
+echo "    Instalador de Dotfiles - Hyprland    "
 echo "=========================================="
 
-# 1. Paquetes del sistema con Pacman
-PACKAGES_PACMAN=(
-    base-devel
-    git
-    curl
-    starship
-    # Drivers VMware
-    mesa
-    open-vm-tools
-    xf86-video-vmware
-    xorg-xwayland
-    # Gestor de sesión gráfico
-    sddm
-    qt5-quickcontrols2
-    qt5-graphicaleffects
-    # Entorno Hyprland
-    hyprland
-    hyprpaper
-    hyprlock
-    xdg-desktop-portal-hyprland
-    xdg-desktop-portal-gtk
-    polkit-kde-agent
-    qt5-wayland
-    qt6-wayland
-    # Terminal y utilidades
-    fastfetch
-    foot
-    librsvg
-    less
-    ttf-font-awesome
-)
-
-echo "--> Instalando paquetes de Pacman..."
-sudo pacman -Syu --needed --noconfirm "${PACKAGES_PACMAN[@]}"
-
-# 2. Habilitar servicios del sistema
-echo "--> Habilitando servicios (SDDM y VMware)..."
-sudo systemctl enable sddm.service || true
-sudo systemctl enable vmtoolsd.service || true
-
-# 3. Instalación de yay (Helper de AUR)
-if ! command -v yay &> /dev/null; then
-    echo "--> Compilando e instalando yay..."
-    TEMP_DIR=$(mktemp -d)
-    git clone https://aur.archlinux.org/yay.git "$TEMP_DIR/yay"
-    cd "$TEMP_DIR/yay"
-    makepkg -si --noconfirm
-    cd "$HOME"
-    rm -rf "$TEMP_DIR"
-fi
-
-# 4. Clonar repositorio si no existe
+REPO_URL="https://github.com/Zeiber99/dotfiles.git"
 DOTFILES_DIR="$HOME/dotfiles"
 
+# 1. Asegurar que Git y herramientas básicas están instaladas
+echo -e "\n[1/5] Verificando e instalando herramientas base..."
+sudo pacman -Syu --needed --noconfirm git base-devel
+
+# 2. Clonar el repositorio si no existe localmente
 if [ ! -d "$DOTFILES_DIR" ]; then
-    echo "--> Clonando repositorio desde GitHub..."
-    git clone https://github.com/Zeiber99/dotfiles.git "$DOTFILES_DIR"
+    echo -e "\n[2/5] Clonando el repositorio de dotfiles..."
+    git clone "$REPO_URL" "$DOTFILES_DIR"
+else
+    echo -e "\n[2/5] El repositorio ya existe en $DOTFILES_DIR. Actualizando..."
+    git -C "$DOTFILES_DIR" pull
 fi
 
-# 5. Crear enlaces simbólicos
-echo "--> Vinculando configuraciones..."
-mkdir -p "$HOME/.config"
-ln -sf "$DOTFILES_DIR/config/hypr" "$HOME/.config/hypr"
-ln -sf "$DOTFILES_DIR/config/fastfetch" "$HOME/.config/fastfetch"
-ln -sf "$DOTFILES_DIR/bashrc" "$HOME/.bashrc"
+# 3. Instalar helper de AUR (yay) si no existe
+if ! command -v yay &> /dev/null && ! command -v paru &> /dev/null; then
+    echo -e "\n[3/5] Instalando yay (AUR helper)..."
+    git clone https://aur.archlinux.org/yay.git /tmp/yay
+    (cd /tmp/yay && makepkg -si --noconfirm)
+    rm -rf /tmp/yay
+fi
 
-echo "=========================================="
-echo "   ¡Instalación completada con éxito!     "
+AUR_HELPER=$(command -v paru || command -v yay)
+
+# 4. Lista de programas del entorno (Hyprland, Waybar, Terminales, etc.)
+PACKAGES=(
+    hyprland waybar rofi-wayland dunst foot starship
+    thunar pavucontrol nwg-look xsettingsd wlogout wofi
+    ttf-font-awesome qt5-wayland qt6-wayland
+)
+
+echo -e "\n[4/5] Instalando paquetes del entorno..."
+$AUR_HELPER -S --needed --noconfirm "${PACKAGES[@]}"
+
+# 5. Crear enlaces simbólicos en ~/.config
+echo -e "\n[5/5] Creando enlaces simbólicos hacia ~/.config..."
+mkdir -p "$HOME/.config"
+
+# Recorrer carpetas dentro de config/ y enlazarlas
+for config_path in "$DOTFILES_DIR/config"/*; do
+    folder_name=$(basename "$config_path")
+    target="$HOME/.config/$folder_name"
+
+    # Si ya existe un directorio que no sea un enlace simbólico, hace un backup
+    if [ -d "$target" ] && [ ! -L "$target" ]; then
+        echo "Haciendo backup de $target existente a $target.bak"
+        mv "$target" "$target.bak"
+    fi
+
+    # Crea enlace simbólico (-s) forzado (-f) para reemplazar si existe
+    ln -snf "$config_path" "$target"
+    echo "Enlazado: $folder_name -> ~/.config/$folder_name"
+done
+
+echo -e "\n=========================================="
+echo " ¡Instalación completada! Reinicia la sesión."
 echo "=========================================="
