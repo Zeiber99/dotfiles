@@ -6,25 +6,22 @@ echo "=========================================="
 echo "   Iniciando instalación de Dotfiles...   "
 echo "=========================================="
 
-# 1. Lista súper completa de paquetes (Pacman)
+# 1. Paquetes del sistema con Pacman
 PACKAGES_PACMAN=(
-    # Compilación y Control de Versiones
     base-devel
     git
     curl
-    
-    # Controladores Gráficos y Aceleración para VMware
+    starship
+    # Drivers VMware
     mesa
     open-vm-tools
     xf86-video-vmware
     xorg-xwayland
-    
-    # Gestor de Inicio de Sesión (SDDM + Dependencias Qt)
+    # Gestor de sesión gráfico
     sddm
     qt5-quickcontrols2
     qt5-graphicaleffects
-    
-    # Entorno Hyprland y Wayland
+    # Entorno Hyprland
     hyprland
     hyprpaper
     hyprlock
@@ -33,8 +30,7 @@ PACKAGES_PACMAN=(
     polkit-kde-agent
     qt5-wayland
     qt6-wayland
-    
-    # Fuentes, Terminal y Utilidades
+    # Terminal y utilidades
     fastfetch
     foot
     librsvg
@@ -42,15 +38,15 @@ PACKAGES_PACMAN=(
     ttf-font-awesome
 )
 
-echo "--> Instalando paquetes oficiales con Pacman..."
+echo "--> Instalando paquetes de Pacman..."
 sudo pacman -Syu --needed --noconfirm "${PACKAGES_PACMAN[@]}"
 
-# 2. Habilitar servicios clave de Systemd
-echo "--> Habilitando servicios de arranque (SDDM y VMware Tools)..."
-sudo systemctl enable sddm.service
-sudo systemctl enable vmtoolsd.service
+# 2. Habilitar servicios del sistema
+echo "--> Habilitando servicios (SDDM y VMware)..."
+sudo systemctl enable sddm.service || true
+sudo systemctl enable vmtoolsd.service || true
 
-# 3. Instalación de yay (Helper para AUR)
+# 3. Instalación de yay (Helper de AUR)
 if ! command -v yay &> /dev/null; then
     echo "--> Compilando e instalando yay..."
     TEMP_DIR=$(mktemp -d)
@@ -61,7 +57,7 @@ if ! command -v yay &> /dev/null; then
     rm -rf "$TEMP_DIR"
 fi
 
-# 4. Verificar o clonar repositorio
+# 4. Clonar repositorio si no existe
 DOTFILES_DIR="$HOME/dotfiles"
 
 if [ ! -d "$DOTFILES_DIR" ]; then
@@ -70,7 +66,7 @@ if [ ! -d "$DOTFILES_DIR" ]; then
 fi
 
 # 5. Crear enlaces simbólicos
-echo "--> Vinculando archivos de configuración..."
+echo "--> Vinculando configuraciones..."
 mkdir -p "$HOME/.config"
 ln -sf "$DOTFILES_DIR/config/hypr" "$HOME/.config/hypr"
 ln -sf "$DOTFILES_DIR/config/fastfetch" "$HOME/.config/fastfetch"
@@ -78,5 +74,4 @@ ln -sf "$DOTFILES_DIR/bashrc" "$HOME/.bashrc"
 
 echo "=========================================="
 echo "   ¡Instalación completada con éxito!     "
-echo "   Reinicia el sistema para entrar a la GUI"
 echo "=========================================="
