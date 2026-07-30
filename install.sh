@@ -1,23 +1,40 @@
 #!/usr/bin/env bash
 
-# Salir si ocurre un error
 set -e
 
 echo "=========================================="
 echo "   Iniciando instalación de Dotfiles...   "
 echo "=========================================="
 
-# 1. Paquetes oficiales de Pacman
+# 1. Lista súper completa de paquetes (Pacman)
 PACKAGES_PACMAN=(
+    # Compilación y Control de Versiones
     base-devel
     git
+    curl
+    
+    # Controladores Gráficos y Aceleración para VMware
+    mesa
+    open-vm-tools
+    xf86-video-vmware
+    xorg-xwayland
+    
+    # Gestor de Inicio de Sesión (SDDM + Dependencias Qt)
+    sddm
+    qt5-quickcontrols2
+    qt5-graphicaleffects
+    
+    # Entorno Hyprland y Wayland
     hyprland
     hyprpaper
     hyprlock
     xdg-desktop-portal-hyprland
+    xdg-desktop-portal-gtk
     polkit-kde-agent
     qt5-wayland
     qt6-wayland
+    
+    # Fuentes, Terminal y Utilidades
     fastfetch
     foot
     librsvg
@@ -25,35 +42,26 @@ PACKAGES_PACMAN=(
     ttf-font-awesome
 )
 
-# 2. Paquetes de AUR (añade aquí las apps que requieran yay)
-PACKAGES_AUR=(
-    # Ejemplo: hyprpicker
-)
-
-echo "--> Instalando paquetes oficiales del sistema..."
+echo "--> Instalando paquetes oficiales con Pacman..."
 sudo pacman -Syu --needed --noconfirm "${PACKAGES_PACMAN[@]}"
 
-# 3. Instalación de yay (si no está instalado)
+# 2. Habilitar servicios clave de Systemd
+echo "--> Habilitando servicios de arranque (SDDM y VMware Tools)..."
+sudo systemctl enable sddm.service
+sudo systemctl enable vmtoolsd.service
+
+# 3. Instalación de yay (Helper para AUR)
 if ! command -v yay &> /dev/null; then
-    echo "--> yay no está instalado. Compilando e instalando yay..."
+    echo "--> Compilando e instalando yay..."
     TEMP_DIR=$(mktemp -d)
     git clone https://aur.archlinux.org/yay.git "$TEMP_DIR/yay"
     cd "$TEMP_DIR/yay"
     makepkg -si --noconfirm
     cd "$HOME"
     rm -rf "$TEMP_DIR"
-    echo "--> yay instalado correctamente."
-else
-    echo "--> yay ya está instalado."
 fi
 
-# 4. Instalación de paquetes de AUR (si la lista no está vacía)
-if [ ${#PACKAGES_AUR[@]} -gt 0 ]; then
-    echo "--> Instalando paquetes de AUR con yay..."
-    yay -S --needed --noconfirm "${PACKAGES_AUR[@]}"
-fi
-
-# 5. Clonar o verificar el repositorio de dotfiles
+# 4. Verificar o clonar repositorio
 DOTFILES_DIR="$HOME/dotfiles"
 
 if [ ! -d "$DOTFILES_DIR" ]; then
@@ -61,8 +69,8 @@ if [ ! -d "$DOTFILES_DIR" ]; then
     git clone https://github.com/Zeiber99/dotfiles.git "$DOTFILES_DIR"
 fi
 
-# 6. Crear enlaces simbólicos
-echo "--> Vinculando configuraciones..."
+# 5. Crear enlaces simbólicos
+echo "--> Vinculando archivos de configuración..."
 mkdir -p "$HOME/.config"
 ln -sf "$DOTFILES_DIR/config/hypr" "$HOME/.config/hypr"
 ln -sf "$DOTFILES_DIR/config/fastfetch" "$HOME/.config/fastfetch"
@@ -70,4 +78,5 @@ ln -sf "$DOTFILES_DIR/bashrc" "$HOME/.bashrc"
 
 echo "=========================================="
 echo "   ¡Instalación completada con éxito!     "
+echo "   Reinicia el sistema para entrar a la GUI"
 echo "=========================================="
